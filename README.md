@@ -155,5 +155,26 @@ total 91216713
 -rwxrwxrwx 1 ghtw30s ghtw30s        773 Feb 11 19:36 config.json
 ```
 
+We evaluate the fine-tuned LM using the testset:
+
+```
+def evaluate(sample):
+    prompt = pipe.tokenizer.apply_chat_template(sample["messages"][:2], tokenize=False, add_generation_prompt=True)
+    outputs = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.7, top_k=50, top_p=0.95, eos_token_id=pipe.tokenizer.eos_token_id, pad_token_id=pipe.tokenizer.pad_token_id)
+    predicted_answer = outputs[0]['generated_text'][len(prompt):].strip()
+    if predicted_answer == sample["messages"][2]["content"]:
+        return 1 
+    else:
+        return 0
+
+# compute accuracy
+accuracy = sum(success_rate)/len(success_rate)
+print(f"Accuracy: {accuracy*100:.2f}%")  
+
+Accuracy: 77.00%
+99 Mon Feb 12 22:22:04 2024
+
+```
+
 
 
